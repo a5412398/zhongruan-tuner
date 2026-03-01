@@ -20,23 +20,25 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
     }
 
-    private var hasPermission = false
-
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         Log.d(TAG, "Permission result: $isGranted")
-        hasPermission = isGranted
-        if (!isGranted) {
-            // 权限被拒绝，应用会显示错误提示
-        }
+        // 权限请求完成，应用会继续显示
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.d(TAG, "Activity onCreate")
 
-        requestPermission()
+        // 请求权限
+        val currentPermission = checkSelfPermission(Manifest.permission.RECORD_AUDIO)
+        if (currentPermission != PackageManager.PERMISSION_GRANTED) {
+            Log.d(TAG, "Requesting RECORD_AUDIO permission")
+            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+        } else {
+            Log.d(TAG, "Permission already granted")
+        }
 
         setContent {
             ZhongruanTunerTheme {
@@ -44,9 +46,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TunerScreen(
-                        hasPermission = hasPermission
-                    )
+                    TunerScreen()
                 }
             }
         }
@@ -54,23 +54,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onResume() {
         super.onResume()
-        // 检查权限状态是否改变
+        // 检查权限状态
         val currentPermission = checkSelfPermission(Manifest.permission.RECORD_AUDIO)
-        val newHasPermission = (currentPermission == PackageManager.PERMISSION_GRANTED)
-        if (newHasPermission && !hasPermission) {
-            Log.d(TAG, "Permission granted in onResume")
-            hasPermission = true
-        }
-    }
-
-    private fun requestPermission() {
-        val currentPermission = checkSelfPermission(Manifest.permission.RECORD_AUDIO)
-        hasPermission = (currentPermission == PackageManager.PERMISSION_GRANTED)
-        Log.d(TAG, "Current permission status: $hasPermission")
-
-        if (!hasPermission) {
-            Log.d(TAG, "Requesting RECORD_AUDIO permission")
-            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        }
+        Log.d(TAG, "onResume permission status: $currentPermission")
     }
 }

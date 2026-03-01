@@ -30,19 +30,8 @@ class TunerViewModel(
 
     init {
         Log.d(TAG, "ViewModel initialized")
-    }
-
-    fun requestMicrophonePermission() {
-        Log.d(TAG, "Requesting microphone permission")
-        if (!audioRecorder.hasPermission()) {
-            _state.value = _state.value.copy(
-                error = "需要麦克风权限\n请在设置中允许麦克风访问"
-            )
-            Log.w(TAG, "Microphone permission not granted")
-        } else {
-            Log.d(TAG, "Microphone permission granted")
-            startListening()
-        }
+        // 启动时自动尝试开始
+        startListening()
     }
 
     private fun startListening() {
@@ -53,6 +42,9 @@ class TunerViewModel(
 
         if (!audioRecorder.hasPermission()) {
             Log.w(TAG, "Cannot start: no permission")
+            _state.value = _state.value.copy(
+                error = "需要麦克风权限\n请点击屏幕请求权限"
+            )
             return
         }
 
@@ -74,9 +66,11 @@ class TunerViewModel(
             } catch (e: SecurityException) {
                 Log.e(TAG, "Security exception: ${e.message}")
                 _state.value = _state.value.copy(error = "麦克风权限被拒绝")
+                isListening = false
             } catch (e: Exception) {
                 Log.e(TAG, "Audio recording error: ${e.message}")
-                _state.value = _state.value.copy(error = "音频采集失败\n请检查麦克风连接")
+                _state.value = _state.value.copy(error = "音频采集失败\n请检查麦克风")
+                isListening = false
             }
         }
     }
@@ -93,7 +87,7 @@ class TunerViewModel(
                 detectedPitch = pitchName,
                 deviation = cents,
                 status = status,
-                error = null // Clear any previous errors
+                error = null
             )
         } catch (e: Exception) {
             Log.e(TAG, "Error updating state: ${e.message}")
@@ -113,9 +107,7 @@ class TunerViewModel(
 
     fun clearError() {
         _state.value = _state.value.copy(error = null)
-        if (audioRecorder.hasPermission()) {
-            startListening()
-        }
+        startListening()
     }
 
     override fun onCleared() {

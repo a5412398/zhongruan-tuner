@@ -28,19 +28,11 @@ import com.lobsterai.zhongruan_tuner.ui.theme.*
 
 @Composable
 fun TunerScreen(
-    hasPermission: Boolean = true,
     viewModel: TunerViewModel = viewModel(
         factory = TunerViewModelFactory(LocalContext.current)
     )
 ) {
     val state by viewModel.state.collectAsState()
-
-    // 请求麦克风权限
-    LaunchedEffect(hasPermission) {
-        if (hasPermission) {
-            viewModel.requestMicrophonePermission()
-        }
-    }
 
     // 动画效果
     val pulseScale = animateFloatAsState(
