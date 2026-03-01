@@ -43,11 +43,14 @@ fun TunerScreen(
     }
 
     // 动画效果
-    val pulseScale by infiniteRepeatable(
-        animation = tween(1500, easing = EaseInOut),
-        initialValue = 1f,
-        repeatMode = RepeatMode.Reverse
-    )
+    val pulseScale = animateFloatAsState(
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = EaseInOut),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulseScale"
+    ).value
 
     Box(
         modifier = Modifier
@@ -121,7 +124,7 @@ fun TunerScreen(
             Text(
                 text = "弹响琴弦开始调音",
                 fontSize = 14.sp,
-                color = Color.Gray.copy(alpha = 0.7f),
+                color = Color.Gray.copy(alpha = 0.7F),
                 modifier = Modifier.padding(bottom = 32.dp)
             )
         }
@@ -131,7 +134,7 @@ fun TunerScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.85))
+                    .background(Color.Black.copy(alpha = 0.85F))
                     .clickable { viewModel.clearError() },
                 contentAlignment = Alignment.Center
             ) {
