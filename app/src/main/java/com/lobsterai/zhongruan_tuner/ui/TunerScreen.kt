@@ -169,7 +169,7 @@ fun StringSelectorModern(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = Color.White.copy(alpha = 0.05),
+                color = Color.White.copy(alpha = 0.05F),
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(vertical = 20.dp, horizontal = 12.dp),
@@ -193,13 +193,13 @@ fun StringButtonModern(
 ) {
     val backgroundColor = if (isSelected) {
         Brush.linearGradient(
-            colors = listOf(TunerYellow, TunerYellow.copy(alpha = 0.7f))
+            colors = listOf(TunerYellow, TunerYellow.copy(alpha = 0.7F))
         )
     } else {
         Brush.linearGradient(
             colors = listOf(
-                Color.White.copy(alpha = 0.1),
-                Color.White.copy(alpha = 0.05)
+                Color.White.copy(alpha = 0.1F),
+                Color.White.copy(alpha = 0.05F)
             )
         )
     }
@@ -375,25 +375,25 @@ fun PointerModern(
                     val x = centerX + (i * 20)
                     val isMark = i % 5 == 0
                     drawLine(
-                        color = Color.Gray.copy(alpha = 0.5f),
-                        start = Offset(x, centerY - if (isMark) 20 else 10),
-                        end = Offset(x, centerY + if (isMark) 20 else 10),
-                        strokeWidth = if (isMark) 2.dp.toPx() else 1.dp.toPx()
+                        color = Color.Gray.copy(alpha = 0.5F),
+                        start = Offset(x, centerY - if (isMark) 20f else 10f),
+                        end = Offset(x, centerY + if (isMark) 20f else 10f),
+                        strokeWidth = if (isMark) 6f else 3f
                     )
                 }
             }
         }
 
         // 指针
-        val pointerX = (animatedDeviation / 50f) * (100.dp.toPx())
+        val pointerX = (animatedDeviation / 50f) * 100f
         Canvas(modifier = Modifier.fillMaxWidth().height(60.dp)) {
             val centerX = size.width / 2
             val centerY = size.height / 2
 
-            // 指针三角形
+            // 指针
             drawCircle(
                 color = pointerColor,
-                radius = 8.dp.toPx(),
+                radius = 12f,
                 center = Offset(centerX + pointerX, centerY)
             )
         }
