@@ -6,7 +6,7 @@ package com.lobsterai.zhongruan_tuner.model
  */
 enum class RuanString(
     val id: Int,
-    val name: String,
+    val stringName: String,
     val pitch: String,
     val frequency: Float,
     val displayName: String

@@ -64,7 +64,7 @@ private fun StringButton(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = ruanString.name,
+            text = ruanString.stringName,
             style = StringName.copy(color = nameColor),
             textAlign = TextAlign.Center
         )

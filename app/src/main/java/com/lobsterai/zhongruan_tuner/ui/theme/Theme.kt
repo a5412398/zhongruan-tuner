@@ -1,8 +1,8 @@
 package com.lobsterai.zhongruan_tuner.ui.theme
 
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -29,6 +29,7 @@ fun ZhongruanTunerTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = DarkColorScheme
+    val typography = Typography()
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -40,7 +41,7 @@ fun ZhongruanTunerTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = typography,
         content = content
     )
 }

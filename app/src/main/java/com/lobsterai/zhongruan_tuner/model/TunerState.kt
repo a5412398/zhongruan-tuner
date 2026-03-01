@@ -23,7 +23,8 @@ data class TunerState(
      * 公式：cents = 1200 * log2(f1 / f2)
      */
     fun calculateCents(frequency: Float, targetFrequency: Float): Float {
-        return (1200 * (kotlin.math.log(frequency / targetFrequency) / kotlin.math.ln(2))).toFloat()
+        val ratio = frequency.toDouble() / targetFrequency.toDouble()
+        return (1200 * (kotlin.math.ln(ratio) / kotlin.math.ln(2.0))).toFloat()
     }
 
     /**
