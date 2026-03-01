@@ -55,9 +55,6 @@ dependencies {
     // ViewModel
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
 
-    // TarsosDSP for pitch detection
-    implementation("be.tarsosdsp:tarsosdsp:2.6")
-
     // Test dependencies
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
