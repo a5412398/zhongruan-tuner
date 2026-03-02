@@ -15,6 +15,10 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -28,91 +32,59 @@ class MainActivity : ComponentActivity() {
         private const val TAG = "MainActivity"
     }
 
-    private var permissionGranted = false
+    private var hasPermission by mutableStateOf(false)
+    private var permissionRequested by mutableStateOf(false)
 
     private val permissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        permissionGranted = isGranted
-        Log.i(TAG, "Permission result: $isGranted")
-
-        // 权限授予后重新设置内容
+        hasPermission = isGranted
+        Log.i(TAG, "=== Permission result: $isGranted ===")
         if (isGranted) {
-            Log.i(TAG, "Permission granted, setting up TunerScreen")
-            setupContent()
+            Log.i(TAG, "Permission granted!")
         } else {
-            Log.w(TAG, "Permission denied, showing error UI")
-            setupErrorContent()
+            Log.w(TAG, "Permission denied")
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "=== Activity onCreate ===")
+        Log.i(TAG, "Package: $packageName")
 
-        // 检查权限状态
+        // 先检查权限状态
         val currentPermission = ContextCompat.checkSelfPermission(
             this,
             Manifest.permission.RECORD_AUDIO
         )
+        hasPermission = (currentPermission == PackageManager.PERMISSION_GRANTED)
+        Log.i(TAG, "Initial permission status: $hasPermission")
 
-        if (currentPermission == PackageManager.PERMISSION_GRANTED) {
-            Log.i(TAG, "Permission already granted")
-            permissionGranted = true
-            setupContent()
-        } else {
-            Log.i(TAG, "Requesting permission...")
-            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
-        }
-    }
-
-    private fun setupContent() {
-        Log.i(TAG, "Setting up TunerScreen content")
         setContent {
             ZhongruanTunerTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Log.i(TAG, "TunerScreen composed")
-                    TunerScreen()
-                }
-            }
-        }
-        Log.i(TAG, "Content setup successful")
-    }
+                    // 使用 LaunchedEffect 在 UI 渲染后请求权限
+                    if (!hasPermission && !permissionRequested) {
+                        Log.i(TAG, "Requesting permission from Composable")
+                        permissionRequested = true
+                        permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                    }
 
-    private fun setupErrorContent() {
-        Log.i(TAG, "Setting up error content")
-        setContent {
-            ZhongruanTunerTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "需要麦克风权限",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Text(
-                            text = "请在系统设置中允许麦克风访问",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(top = 16.dp)
-                        )
-                        CircularProgressIndicator(
-                            modifier = Modifier.padding(top = 32.dp)
-                        )
+                    if (hasPermission) {
+                        Log.i(TAG, "Showing TunerScreen")
+                        TunerScreen()
+                    } else {
+                        Log.i(TAG, "Showing permission request UI")
+                        PermissionRequestUI()
                     }
                 }
             }
         }
+
+        Log.i(TAG, "=== Activity onCreate completed ===")
     }
 
     override fun onResume() {
@@ -121,6 +93,34 @@ class MainActivity : ComponentActivity() {
             this,
             Manifest.permission.RECORD_AUDIO
         )
-        Log.i(TAG, "onResume permission: $currentPermission")
+        val newHasPermission = (currentPermission == PackageManager.PERMISSION_GRANTED)
+        if (newHasPermission && !hasPermission) {
+            Log.i(TAG, "Permission granted in onResume")
+            hasPermission = true
+        }
+    }
+}
+
+@androidx.compose.runtime.Composable
+fun PermissionRequestUI() {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "需要麦克风权限",
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.error
+        )
+        Text(
+            text = "请在弹出窗口中点击\"允许\"",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(top = 16.dp)
+        )
+        CircularProgressIndicator(
+            modifier = Modifier.padding(top = 32.dp)
+        )
     }
 }
