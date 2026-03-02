@@ -34,6 +34,11 @@ fun TunerScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+    // 启动时开始监听音频
+    LaunchedEffect(Unit) {
+        viewModel.startListening()
+    }
+
     // 动画效果
     val pulseScale = animateFloatAsState(
         targetValue = 1f,

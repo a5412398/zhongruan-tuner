@@ -30,20 +30,18 @@ class TunerViewModel(
 
     init {
         Log.d(TAG, "ViewModel initialized")
-        // 启动时自动尝试开始
-        startListening()
     }
 
-    private fun startListening() {
+    fun startListening() {
         if (isListening) {
-            Log.d(TAG, "Already listening, skipping")
+            Log.d(TAG, "Already listening")
             return
         }
 
         if (!audioRecorder.hasPermission()) {
-            Log.w(TAG, "Cannot start: no permission")
+            Log.w(TAG, "No permission")
             _state.value = _state.value.copy(
-                error = "需要麦克风权限\n请点击屏幕请求权限"
+                error = "需要麦克风权限\n请在弹出窗口中点击\"允许\""
             )
             return
         }
