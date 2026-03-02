@@ -54,14 +54,10 @@ class AudioRecorder(private val context: Context) {
             val actualBufferSize = bufferSize * BUFFER_SIZE_FACTOR
             val audioData = ShortArray(actualBufferSize)
 
-            // 检查 AudioRecord 是否可用
-            if (AudioRecord.getNativeOutputState() != AudioRecord.STATE_INITIALIZED) {
-                Log.e(TAG, "AudioRecord not available")
-                return@flow
-            }
-
+            // 创建 AudioRecord
+            var audioRecordInstance: AudioRecord? = null
             try {
-                audioRecord = AudioRecord(
+                audioRecordInstance = AudioRecord(
                     MediaRecorder.AudioSource.MIC,
                     SAMPLE_RATE,
                     CHANNEL_CONFIG,
@@ -76,13 +72,15 @@ class AudioRecorder(private val context: Context) {
                 return@flow
             }
 
-            val record = audioRecord
-            if (record == null || record.state != AudioRecord.STATE_INITIALIZED) {
+            // 检查 AudioRecord 是否初始化成功
+            if (audioRecordInstance == null || audioRecordInstance.state != AudioRecord.STATE_INITIALIZED) {
                 Log.e(TAG, "AudioRecord initialization failed")
-                audioRecord?.release()
-                audioRecord = null
+                audioRecordInstance?.release()
                 return@flow
             }
+
+            audioRecord = audioRecordInstance
+            val record = audioRecordInstance
 
             try {
                 record.startRecording()
