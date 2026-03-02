@@ -34,12 +34,12 @@ class TunerViewModel(
 
     fun startListening() {
         if (isListening) {
-            Log.d(TAG, "Already listening")
+            Log.d(TAG, "Already listening, skipping")
             return
         }
 
         if (!audioRecorder.hasPermission()) {
-            Log.w(TAG, "No permission")
+            Log.w(TAG, "No permission, showing error")
             _state.value = _state.value.copy(
                 error = "需要麦克风权限\n请在弹出窗口中点击\"允许\""
             )
@@ -47,27 +47,31 @@ class TunerViewModel(
         }
 
         isListening = true
-        Log.d(TAG, "Starting audio recording")
+        Log.d(TAG, "Starting audio collection")
 
         viewModelScope.launch {
             try {
                 audioRecorder.getAudioFlow().collect { audioData ->
                     try {
                         val frequency = pitchDetector.detectFrequency(audioData)
-                        if (frequency != null) {
+                        if (frequency != null && frequency > 0) {
                             updateState(frequency)
                         }
                     } catch (e: Exception) {
-                        Log.e(TAG, "Error detecting pitch: ${e.message}")
+                        Log.e(TAG, "Pitch detection error: ${e.message}")
                     }
                 }
             } catch (e: SecurityException) {
                 Log.e(TAG, "Security exception: ${e.message}")
-                _state.value = _state.value.copy(error = "麦克风权限被拒绝")
+                _state.value = _state.value.copy(
+                    error = "麦克风权限被拒绝"
+                )
                 isListening = false
             } catch (e: Exception) {
-                Log.e(TAG, "Audio recording error: ${e.message}")
-                _state.value = _state.value.copy(error = "音频采集失败\n请检查麦克风")
+                Log.e(TAG, "Audio flow error: ${e.message}", e)
+                _state.value = _state.value.copy(
+                    error = "音频采集失败\n请重启应用"
+                )
                 isListening = false
             }
         }
