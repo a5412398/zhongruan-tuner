@@ -9,6 +9,7 @@ import android.media.MediaRecorder
 import android.util.Log
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -25,7 +26,7 @@ class AudioRecorder(private val context: Context) {
 
     @Volatile
     private var isRecording = false
-    
+
     @Volatile
     private var audioRecord: AudioRecord? = null
 
@@ -69,11 +70,11 @@ class AudioRecorder(private val context: Context) {
 
             audioRecord = record
             isRecording = true
-            
+
             record.startRecording()
             Log.d(TAG, "Recording started")
 
-            while (isRecording && isActive) {
+            while (isRecording && currentCoroutineContext().isActive) {
                 val readSize = record.read(audioData, 0, audioData.size)
                 if (readSize > 0) {
                     emit(audioData.copyOfRange(0, readSize))
@@ -110,7 +111,8 @@ class AudioRecorder(private val context: Context) {
     fun stop() {
         Log.d(TAG, "stop() called")
         isRecording = false
-        audioRecord?.let { record ->
+        val record = audioRecord
+        if (record != null) {
             try {
                 if (record.recordingState == AudioRecord.RECORDSTATE_RECORDING) {
                     record.stop()
