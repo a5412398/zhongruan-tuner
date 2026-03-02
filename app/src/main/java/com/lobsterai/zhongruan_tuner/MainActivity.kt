@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -68,21 +69,17 @@ class MainActivity : ComponentActivity() {
     private fun setupContent() {
         Log.i(TAG, "Setting up TunerScreen content")
         setContent {
-            try {
-                ZhongruanTunerTheme {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
-                    ) {
-                        Log.i(TAG, "TunerScreen composed")
-                        TunerScreen()
-                    }
+            ZhongruanTunerTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    Log.i(TAG, "TunerScreen composed")
+                    TunerScreen()
                 }
-                Log.i(TAG, "Content setup successful")
-            } catch (e: Exception) {
-                Log.e(TAG, "Error setting up content: ${e.message}", e)
             }
         }
+        Log.i(TAG, "Content setup successful")
     }
 
     private fun setupErrorContent() {
@@ -107,10 +104,10 @@ class MainActivity : ComponentActivity() {
                             text = "请在系统设置中允许麦克风访问",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurface,
-                            modifier = androidx.compose.ui.Modifier.padding(top = 16.dp)
+                            modifier = Modifier.padding(top = 16.dp)
                         )
                         CircularProgressIndicator(
-                            modifier = androidx.compose.ui.Modifier.padding(top = 32.dp)
+                            modifier = Modifier.padding(top = 32.dp)
                         )
                     }
                 }
