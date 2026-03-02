@@ -29,25 +29,29 @@ import com.lobsterai.zhongruan_tuner.ui.theme.*
 @Composable
 fun TunerScreen(
     viewModel: TunerViewModel = viewModel(
-        factory = TunerViewModelFactory(LocalContext.current)
+        factory = TunerViewModel.Factory(LocalContext.current.applicationContext as android.app.Application)
     )
 ) {
     val state by viewModel.state.collectAsState()
 
-    // 启动时开始监听音频
     LaunchedEffect(Unit) {
         viewModel.startListening()
     }
 
-    // 动画效果
-    val pulseScale = animateFloatAsState(
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.stopListening()
+        }
+    }
+
+    val pulseScale by animateFloatAsState(
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
             animation = tween(1500, easing = EaseInOut),
             repeatMode = RepeatMode.Reverse
         ),
         label = "pulseScale"
-    ).value
+    )
 
     Box(
         modifier = Modifier
@@ -68,7 +72,6 @@ fun TunerScreen(
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 顶部标题区域
             Spacer(modifier = Modifier.height(48.dp))
 
             Text(
@@ -90,7 +93,6 @@ fun TunerScreen(
 
             Spacer(modifier = Modifier.height(40.dp))
 
-            // 弦选择器 - 改进设计
             StringSelectorModern(
                 selectedString = state.selectedString,
                 onStringSelected = { viewModel.selectString(it) }
@@ -98,7 +100,6 @@ fun TunerScreen(
 
             Spacer(modifier = Modifier.height(50.dp))
 
-            // 中央调音显示区域
             TunerDisplayModern(
                 frequency = state.detectedFrequency,
                 pitchName = state.detectedPitch,
@@ -109,13 +110,11 @@ fun TunerScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 状态提示
             StatusTextModern(
                 status = state.status,
                 deviation = state.deviation
             )
 
-            // 底部提示
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
@@ -126,7 +125,6 @@ fun TunerScreen(
             )
         }
 
-        // 错误提示
         state.error?.let { error ->
             Box(
                 modifier = Modifier
@@ -239,7 +237,6 @@ fun TunerDisplayModern(
     deviation: Float,
     pulseScale: Float
 ) {
-    // 外圈光环
     val ringColor = when (status) {
         TunerStatus.IN_TUNE -> TunerGreen
         TunerStatus.TOO_LOW -> TunerRed
@@ -250,7 +247,6 @@ fun TunerDisplayModern(
         modifier = Modifier.size(280.dp),
         contentAlignment = Alignment.Center
     ) {
-        // 外圈动画
         Canvas(modifier = Modifier.size(280.dp * pulseScale)) {
             drawCircle(
                 brush = Brush.radialGradient(
@@ -263,7 +259,6 @@ fun TunerDisplayModern(
             )
         }
 
-        // 外圈
         Canvas(modifier = Modifier.size(260.dp)) {
             drawCircle(
                 color = ringColor.copy(alpha = 0.3f),
@@ -272,7 +267,6 @@ fun TunerDisplayModern(
             )
         }
 
-        // 内圈
         Canvas(modifier = Modifier.size(220.dp)) {
             drawCircle(
                 color = ringColor.copy(alpha = 0.5f),
@@ -281,12 +275,10 @@ fun TunerDisplayModern(
             )
         }
 
-        // 中央内容
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // 频率显示
             Text(
                 text = frequency?.let { "%.1f".format(it) } ?: "--.-",
                 fontSize = 56.sp,
@@ -305,7 +297,6 @@ fun TunerDisplayModern(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 音名显示
             Box(
                 modifier = Modifier
                     .size(80.dp)
@@ -324,7 +315,6 @@ fun TunerDisplayModern(
         }
     }
 
-    // 指针刻度
     Spacer(modifier = Modifier.height(24.dp))
 
     PointerModern(
@@ -356,12 +346,10 @@ fun PointerModern(
             .height(80.dp),
         contentAlignment = Alignment.Center
     ) {
-        // 刻度线
         Canvas(modifier = Modifier.fillMaxWidth().height(60.dp)) {
             val centerX = size.width / 2
             val centerY = size.height / 2
 
-            // 中心线
             drawLine(
                 color = TunerGreen,
                 start = Offset(centerX, centerY - 25),
@@ -369,7 +357,6 @@ fun PointerModern(
                 strokeWidth = 3.dp.toPx()
             )
 
-            // 其他刻度
             for (i in -5..5) {
                 if (i != 0) {
                     val x = centerX + (i * 20)
@@ -384,13 +371,11 @@ fun PointerModern(
             }
         }
 
-        // 指针
         val pointerX = (animatedDeviation / 50f) * 100f
         Canvas(modifier = Modifier.fillMaxWidth().height(60.dp)) {
             val centerX = size.width / 2
             val centerY = size.height / 2
 
-            // 指针
             drawCircle(
                 color = pointerColor,
                 radius = 12f,
