@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.lobsterai.zhongruan_tuner2"
+    namespace = "com.lobsterai.zhongruan_tuner"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.lobsterai.zhongruan_tuner2"
+        applicationId = "com.lobsterai.zhongruan_tuner"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

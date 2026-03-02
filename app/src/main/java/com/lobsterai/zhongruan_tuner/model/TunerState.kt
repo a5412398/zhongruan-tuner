@@ -32,8 +32,8 @@ data class TunerState(
      */
     fun getStatusFromCents(cents: Float): TunerStatus {
         return when {
-            cents > 5 -> TunerStatus.TOO_LOW    // 频率低，需要调紧
-            cents < -5 -> TunerStatus.TOO_HIGH  // 频率高，需要调松
+            cents > 5 -> TunerStatus.TOO_HIGH   // 频率高，需要调松
+            cents < -5 -> TunerStatus.TOO_LOW   // 频率低，需要调紧
             else -> TunerStatus.IN_TUNE
         }
     }
