@@ -1,4 +1,4 @@
-package com.lobsterai.zhongruan_tuner.ui.components
+﻿package com.lobsterai.zhongruan_tuner.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
