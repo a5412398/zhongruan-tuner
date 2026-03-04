@@ -1,4 +1,4 @@
-﻿package com.lobsterai.zhongruan_tuner.ui.components
+package com.lobsterai.zhongruan_tuner.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -69,9 +69,8 @@ private fun StringButton(
             textAlign = TextAlign.Center
         )
         Text(
-                text = "第" + ruanString.id + "弦",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
+            text = ruanString.id.toString(),
+            style = StringNumber.copy(color = numberColor),
             fontSize = 16.sp,
             textAlign = TextAlign.Center
         )
