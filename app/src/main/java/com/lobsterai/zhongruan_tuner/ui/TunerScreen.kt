@@ -1,4 +1,4 @@
-package com.lobsterai.zhongruan_tuner.ui
+﻿package com.lobsterai.zhongruan_tuner.ui
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
@@ -75,7 +75,7 @@ fun TunerScreen(
             Spacer(modifier = Modifier.height(48.dp))
 
             Text(
-                text = "中阮调音器",
+                text = "涓槷璋冮煶鍣?,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -90,6 +90,18 @@ fun TunerScreen(
                 letterSpacing = 8.sp,
                 modifier = Modifier.padding(top = 8.dp)
             )
+
+            // 当前弦显示
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = "" + state.selectedString.id + "弦",
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Bold,
+                color = TunerYellow,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             Spacer(modifier = Modifier.height(40.dp))
 
@@ -118,7 +130,7 @@ fun TunerScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "弹响琴弦开始调音",
+                text = "寮瑰搷鐞村鸡寮€濮嬭皟闊?,
                 fontSize = 14.sp,
                 color = Color.Gray.copy(alpha = 0.7F),
                 modifier = Modifier.padding(bottom = 32.dp)
@@ -146,7 +158,7 @@ fun TunerScreen(
                         lineHeight = 24.sp
                     )
                     Text(
-                        text = "点击重试",
+                        text = "鐐瑰嚮閲嶈瘯",
                         fontSize = 14.sp,
                         color = TunerYellow,
                         textAlign = TextAlign.Center,
@@ -391,9 +403,9 @@ fun StatusTextModern(
     deviation: Float
 ) {
     val (text, color) = when (status) {
-        TunerStatus.TOO_LOW -> "太低 → 调紧" to TunerRed
-        TunerStatus.IN_TUNE -> "✓ 准！" to TunerGreen
-        TunerStatus.TOO_HIGH -> "太高 ← 调松" to TunerOrange
+        TunerStatus.TOO_LOW -> "澶綆 鈫?璋冪揣" to TunerRed
+        TunerStatus.IN_TUNE -> "鉁?鍑嗭紒" to TunerGreen
+        TunerStatus.TOO_HIGH -> "澶珮 鈫?璋冩澗" to TunerOrange
     }
 
     val alpha by animateFloatAsState(
