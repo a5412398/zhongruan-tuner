@@ -70,53 +70,42 @@ fun TunerScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp),
+                .padding(horizontal = 20.dp)
+                .padding(top = 36.dp, bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(48.dp))
-
             Text(
                 text = "中阮调音器",
-                fontSize = 28.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
-                letterSpacing = 4.sp
+                letterSpacing = 3.sp
             )
 
             Text(
                 text = "ZHONGRUAN TUNER",
-                fontSize = 12.sp,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Light,
                 color = Color.Gray,
-                letterSpacing = 8.sp,
-                modifier = Modifier.padding(top = 8.dp)
+                letterSpacing = 6.sp,
+                modifier = Modifier.padding(top = 2.dp, bottom = 12.dp)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "当前：第${state.selectedString.id}弦",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = TunerYellow,
-                    textAlign = TextAlign.Center
-                )
-            }
+            Text(
+                text = "当前：第${state.selectedString.id}弦",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = TunerYellow
+            )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             StringSelectorModern(
                 selectedString = state.selectedString,
                 onStringSelected = { viewModel.selectString(it) }
             )
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             TunerDisplayModern(
                 frequency = state.detectedFrequency,
@@ -126,7 +115,14 @@ fun TunerScreen(
                 pulseScale = pulseScale
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+
+            PointerModern(
+                deviation = state.deviation,
+                status = state.status
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             StatusTextModern(
                 status = state.status,
@@ -137,9 +133,9 @@ fun TunerScreen(
 
             Text(
                 text = "弹响琵琶弦开始调音",
-                fontSize = 14.sp,
-                color = Color.Gray.copy(alpha = 0.7F),
-                modifier = Modifier.padding(bottom = 32.dp)
+                fontSize = 12.sp,
+                color = Color.Gray.copy(alpha = 0.4f),
+                modifier = Modifier.padding(bottom = 16.dp)
             )
         }
 
@@ -185,27 +181,27 @@ fun StringSelectorModern(
     ) {
         Row(
             modifier = Modifier
-                .height(80.dp)
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             RuanString.entries.forEach { ruanString ->
                 StringButtonModern(
                     ruanString = ruanString,
                     isSelected = ruanString == selectedString,
-                    onClick = { onStringSelected(ruanString) }
+                    onClick = { onStringSelected(ruanString) },
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
         
-        Spacer(modifier = Modifier.height(8.dp))
-        
         Text(
-            text = "点击下方按钮选择琵琶弦",
-            fontSize = 12.sp,
-            color = Color.Gray,
-            textAlign = TextAlign.Center
+            text = "点击按钮选择要调的弦",
+            fontSize = 10.sp,
+            color = Color.Gray.copy(alpha = 0.6f),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 6.dp)
         )
     }
 }
@@ -214,19 +210,19 @@ fun StringSelectorModern(
 private fun StringButtonModern(
     ruanString: RuanString,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (isSelected) TunerYellow else StringUnselected
-    val nameColor = if (isSelected) DarkBackground else SecondaryText
-    val scale = if (isSelected) 1.1f else 1.0f
+    val backgroundColor = if (isSelected) TunerYellow else Color.White.copy(alpha = 0.1f)
+    val nameColor = if (isSelected) DarkBackground else Color.Gray
 
     Column(
-        modifier = Modifier
-            .size(width = 72.dp, height = 80.dp)
-            .scale(scale)
+        modifier = modifier
+            .aspectRatio(1f)
+            .scale(if (isSelected) 1.05f else 1f)
             .background(
                 color = backgroundColor,
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(14.dp)
             )
             .clickable { onClick() }
             .padding(8.dp),
@@ -236,14 +232,14 @@ private fun StringButtonModern(
         Text(
             text = "第${ruanString.id}弦",
             color = nameColor,
-            fontSize = 18.sp,
+            fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
         )
         Text(
             text = ruanString.pitch,
             color = nameColor.copy(alpha = 0.8f),
-            fontSize = 12.sp,
+            fontSize = 10.sp,
             textAlign = TextAlign.Center
         )
     }
@@ -263,54 +259,42 @@ fun TunerDisplayModern(
         TunerStatus.TOO_HIGH -> TunerOrange
     }
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Box(
+        modifier = Modifier
+            .size(160.dp)
+            .clip(CircleShape)
+            .background(
+                Brush.radialGradient(
+                    colors = listOf(
+                        statusColor.copy(alpha = 0.3f * pulseScale),
+                        statusColor.copy(alpha = 0.1f),
+                        Color.Transparent
+                    )
+                )
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(200.dp)
-                .clip(CircleShape)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(
-                            statusColor.copy(alpha = 0.3f * pulseScale),
-                            statusColor.copy(alpha = 0.1f),
-                            Color.Transparent
-                        )
-                    )
-                ),
-            contentAlignment = Alignment.Center
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                pitchName?.let {
-                    Text(
-                        text = it,
-                        fontSize = 56.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = statusColor
-                    )
-                }
+            pitchName?.let {
+                Text(
+                    text = it,
+                    fontSize = 42.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = statusColor
+                )
+            }
 
-                frequency?.let {
-                    Text(
-                        text = String.format("%.1f Hz", it),
-                        fontSize = 18.sp,
-                        color = Color.Gray,
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
+            frequency?.let {
+                Text(
+                    text = String.format("%.1f Hz", it),
+                    fontSize = 13.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
             }
         }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        PointerModern(
-            deviation = deviation,
-            status = status
-        )
     }
 }
 
@@ -334,17 +318,17 @@ fun PointerModern(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp),
+            .height(40.dp),
         contentAlignment = Alignment.Center
     ) {
-        Canvas(modifier = Modifier.fillMaxWidth().height(60.dp)) {
+        Canvas(modifier = Modifier.fillMaxWidth().height(40.dp)) {
             val centerX = size.width / 2
             val centerY = size.height / 2
 
             drawLine(
                 color = TunerGreen,
-                start = Offset(centerX, centerY - 25),
-                end = Offset(centerX, centerY + 25),
+                start = Offset(centerX, centerY - 20),
+                end = Offset(centerX, centerY + 20),
                 strokeWidth = 3.dp.toPx()
             )
 
@@ -354,22 +338,22 @@ fun PointerModern(
                     val isMark = i % 5 == 0
                     drawLine(
                         color = Color.Gray.copy(alpha = 0.5F),
-                        start = Offset(x, centerY - if (isMark) 20f else 10f),
-                        end = Offset(x, centerY + if (isMark) 20f else 10f),
-                        strokeWidth = if (isMark) 6f else 3f
+                        start = Offset(x, centerY - if (isMark) 15f else 8f),
+                        end = Offset(x, centerY + if (isMark) 15f else 8f),
+                        strokeWidth = if (isMark) 4f else 2f
                     )
                 }
             }
         }
 
         val pointerX = (animatedDeviation / 50f) * 100f
-        Canvas(modifier = Modifier.fillMaxWidth().height(60.dp)) {
+        Canvas(modifier = Modifier.fillMaxWidth().height(40.dp)) {
             val centerX = size.width / 2
             val centerY = size.height / 2
 
             drawCircle(
                 color = pointerColor,
-                radius = 12f,
+                radius = 9f,
                 center = Offset(centerX + pointerX, centerY)
             )
         }
@@ -395,10 +379,9 @@ fun StatusTextModern(
 
     Text(
         text = text,
-        fontSize = 24.sp,
+        fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
         color = color.copy(alpha = alpha),
-        textAlign = TextAlign.Center,
-        modifier = Modifier.padding(vertical = 16.dp)
+        textAlign = TextAlign.Center
     )
 }
