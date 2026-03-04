@@ -91,7 +91,25 @@ fun TunerScreen(
                 modifier = Modifier.padding(top = 8.dp)
             )
 
-            Spacer(modifier = Modifier.height(40.dp))
+            // 添加醒目的当前弦显示
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "当前：第${state.selectedString.id}弦",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TunerYellow,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
 
             StringSelectorModern(
                 selectedString = state.selectedString,
@@ -148,8 +166,7 @@ fun TunerScreen(
                     Text(
                         text = "点击重试",
                         fontSize = 14.sp,
-                        color = TunerYellow,
-                        textAlign = TextAlign.Center,
+                        color = Color.Gray,
                         modifier = Modifier.padding(top = 16.dp)
                     )
                 }
@@ -163,67 +180,70 @@ fun StringSelectorModern(
     selectedString: RuanString,
     onStringSelected: (RuanString) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = Color.White.copy(alpha = 0.05F),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(vertical = 20.dp, horizontal = 12.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        RuanString.entries.forEach { ruanString ->
-            StringButtonModern(
-                ruanString = ruanString,
-                isSelected = ruanString == selectedString,
-                onClick = { onStringSelected(ruanString) }
-            )
+        Row(
+            modifier = Modifier
+                .height(80.dp)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            RuanString.entries.forEach { ruanString ->
+                StringButtonModern(
+                    ruanString = ruanString,
+                    isSelected = ruanString == selectedString,
+                    onClick = { onStringSelected(ruanString) }
+                )
+            }
         }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            text = "点击下方按钮选择琴弦",
+            fontSize = 12.sp,
+            color = Color.Gray,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
 @Composable
-fun StringButtonModern(
+private fun StringButtonModern(
     ruanString: RuanString,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) {
-        Brush.linearGradient(
-            colors = listOf(TunerYellow, TunerYellow.copy(alpha = 0.7F))
-        )
-    } else {
-        Brush.linearGradient(
-            colors = listOf(
-                Color.White.copy(alpha = 0.1F),
-                Color.White.copy(alpha = 0.05F)
-            )
-        )
-    }
+    val backgroundColor = if (isSelected) TunerYellow else StringUnselected
+    val nameColor = if (isSelected) DarkBackground else SecondaryText
+    val scale = if (isSelected) 1.1f else 1.0f
 
     Column(
         modifier = Modifier
-            .size(64.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(backgroundColor)
+            .size(width = 72.dp, height = 80.dp)
+            .scale(scale)
+            .background(
+                color = backgroundColor,
+                shape = RoundedCornerShape(12.dp)
+            )
             .clickable { onClick() }
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = ruanString.stringName,
-            fontSize = 22.sp,
+            text = "第${ruanString.id}弦",
+            style = StringName.copy(color = nameColor),
+            fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
-            color = if (isSelected) DarkBackground else Color.White,
             textAlign = TextAlign.Center
         )
         Text(
-            text = "${ruanString.id}",
+            text = ruanString.pitch,
+            style = StringName.copy(color = nameColor.copy(alpha = 0.8f)),
             fontSize = 12.sp,
-            fontWeight = FontWeight.Medium,
-            color = if (isSelected) DarkBackground.copy(alpha = 0.7f) else Color.Gray,
             textAlign = TextAlign.Center
         )
     }
@@ -237,90 +257,61 @@ fun TunerDisplayModern(
     deviation: Float,
     pulseScale: Float
 ) {
-    val ringColor = when (status) {
+    val statusColor = when (status) {
         TunerStatus.IN_TUNE -> TunerGreen
         TunerStatus.TOO_LOW -> TunerRed
         TunerStatus.TOO_HIGH -> TunerOrange
     }
 
-    Box(
-        modifier = Modifier.size(280.dp),
-        contentAlignment = Alignment.Center
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Canvas(modifier = Modifier.size(280.dp * pulseScale)) {
-            drawCircle(
-                brush = Brush.radialGradient(
-                    colors = listOf(
-                        ringColor.copy(alpha = 0.3f),
-                        Color.Transparent
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .clip(CircleShape)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(
+                            statusColor.copy(alpha = 0.3f * pulseScale),
+                            statusColor.copy(alpha = 0.1f),
+                            Color.Transparent
+                        )
                     )
                 ),
-                radius = size.minDimension / 2
-            )
-        }
-
-        Canvas(modifier = Modifier.size(260.dp)) {
-            drawCircle(
-                color = ringColor.copy(alpha = 0.3f),
-                radius = size.minDimension / 2,
-                style = Stroke(width = 4.dp.toPx())
-            )
-        }
-
-        Canvas(modifier = Modifier.size(220.dp)) {
-            drawCircle(
-                color = ringColor.copy(alpha = 0.5f),
-                radius = size.minDimension / 2,
-                style = Stroke(width = 2.dp.toPx())
-            )
-        }
-
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = frequency?.let { "%.1f".format(it) } ?: "--.-",
-                fontSize = 56.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                text = "Hz",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Gray,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-                    .background(ringColor.copy(alpha = 0.2f)),
-                contentAlignment = Alignment.Center
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = pitchName ?: "--",
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = ringColor,
-                    textAlign = TextAlign.Center
-                )
+                pitchName?.let {
+                    Text(
+                        text = it,
+                        fontSize = 56.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = statusColor
+                    )
+                }
+
+                frequency?.let {
+                    Text(
+                        text = String.format("%.1f Hz", it),
+                        fontSize = 18.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        PointerModern(
+            deviation = deviation,
+            status = status
+        )
     }
-
-    Spacer(modifier = Modifier.height(24.dp))
-
-    PointerModern(
-        deviation = deviation,
-        status = status
-    )
 }
 
 @Composable

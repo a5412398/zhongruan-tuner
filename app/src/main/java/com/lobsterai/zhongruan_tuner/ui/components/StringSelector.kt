@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -47,7 +48,6 @@ private fun StringButton(
 ) {
     val backgroundColor = if (isSelected) TunerYellow else StringUnselected
     val nameColor = if (isSelected) DarkBackground else SecondaryText
-    val numberColor = if (isSelected) DarkBackground.copy(alpha = 0.7f) else SecondaryText.copy(alpha = 0.7f)
     val scale = if (isSelected) 1.1f else 1.0f
 
     Column(
@@ -64,14 +64,16 @@ private fun StringButton(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = ruanString.stringName,
-            style = StringName.copy(color = nameColor),
+            text = "第" + ruanString.id + "弦",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = nameColor,
             textAlign = TextAlign.Center
         )
         Text(
-            text = ruanString.id.toString(),
-            style = StringNumber.copy(color = numberColor),
-            fontSize = 16.sp,
+            text = ruanString.pitch,
+            fontSize = 12.sp,
+            color = nameColor.copy(alpha = 0.8f),
             textAlign = TextAlign.Center
         )
     }
