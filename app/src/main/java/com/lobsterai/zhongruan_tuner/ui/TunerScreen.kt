@@ -1,4 +1,4 @@
-package com.lobsterai.zhongruan_tuner.ui
+﻿package com.lobsterai.zhongruan_tuner.ui
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
@@ -11,7 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clip\nimport androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -75,7 +75,7 @@ fun TunerScreen(
             Spacer(modifier = Modifier.height(48.dp))
 
             Text(
-                text = "中阮调音器",
+                text = "涓槷璋冮煶鍣?,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
@@ -91,7 +91,7 @@ fun TunerScreen(
                 modifier = Modifier.padding(top = 8.dp)
             )
 
-            // 添加醒目的当前弦显示
+            // 娣诲姞閱掔洰鐨勫綋鍓嶅鸡鏄剧ず
             Spacer(modifier = Modifier.height(24.dp))
             
             Box(
@@ -101,7 +101,7 @@ fun TunerScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "当前：第${state.selectedString.id}弦",
+                    text = "褰撳墠锛氱${state.selectedString.id}寮?,
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = TunerYellow,
@@ -136,7 +136,7 @@ fun TunerScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = "弹响琴弦开始调音",
+                text = "寮瑰搷鐞村鸡寮€濮嬭皟闊?,
                 fontSize = 14.sp,
                 color = Color.Gray.copy(alpha = 0.7F),
                 modifier = Modifier.padding(bottom = 32.dp)
@@ -164,7 +164,7 @@ fun TunerScreen(
                         lineHeight = 24.sp
                     )
                     Text(
-                        text = "点击重试",
+                        text = "鐐瑰嚮閲嶈瘯",
                         fontSize = 14.sp,
                         color = Color.Gray,
                         modifier = Modifier.padding(top = 16.dp)
@@ -202,7 +202,7 @@ fun StringSelectorModern(
         Spacer(modifier = Modifier.height(8.dp))
         
         Text(
-            text = "点击下方按钮选择琴弦",
+            text = "鐐瑰嚮涓嬫柟鎸夐挳閫夋嫨鐞村鸡",
             fontSize = 12.sp,
             color = Color.Gray,
             textAlign = TextAlign.Center
@@ -234,7 +234,7 @@ private fun StringButtonModern(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "第${ruanString.id}弦",
+            text = "绗?{ruanString.id}寮?,
             style = StringName.copy(color = nameColor),
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold,
@@ -382,9 +382,9 @@ fun StatusTextModern(
     deviation: Float
 ) {
     val (text, color) = when (status) {
-        TunerStatus.TOO_LOW -> "太低 → 调紧" to TunerRed
-        TunerStatus.IN_TUNE -> "✓ 准！" to TunerGreen
-        TunerStatus.TOO_HIGH -> "太高 ← 调松" to TunerOrange
+        TunerStatus.TOO_LOW -> "澶綆 鈫?璋冪揣" to TunerRed
+        TunerStatus.IN_TUNE -> "鉁?鍑嗭紒" to TunerGreen
+        TunerStatus.TOO_HIGH -> "澶珮 鈫?璋冩澗" to TunerOrange
     }
 
     val alpha by animateFloatAsState(
@@ -402,3 +402,4 @@ fun StatusTextModern(
         modifier = Modifier.padding(vertical = 16.dp)
     )
 }
+
