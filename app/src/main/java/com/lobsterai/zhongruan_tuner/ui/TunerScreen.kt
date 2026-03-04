@@ -94,7 +94,7 @@ fun TunerScreen(
             // 当前弦显示
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = "" + state.selectedString.id + "弦",
+                text = "第" + state.selectedString.id + "弦",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = TunerYellow,
